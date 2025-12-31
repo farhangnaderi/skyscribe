@@ -14,38 +14,67 @@ Convert text to autonomous flight missions for PX4, ArduPilot, and other MAVLink
 - **Continuous/Cursive Mode**: Connects nearby strokes without altitude transitions
 - **Multiple Font Styles**: 8 fonts including bold (futuram) and decorative styles
 
-## Quick Start
+## Installation
 
-### Option 1: Run GUI Locally
+### From PyPI (Recommended)
 
 ```bash
-# 1. Install dependencies
-pip install -r requirements.txt
+pip install skyink
+```
 
-# 2. Start web GUI
-python gui_server.py
+### From Source
 
-# 3. Open browser to http://localhost:5000
-# 4. Preview on map, adjust parameters, generate .plan file
+```bash
+git clone https://github.com/farhangnaderi/skyink.git
+cd skyink
+pip install -e .
+```
+
+## Quick Start
+
+### Option 1: Web GUI
+
+```bash
+# Start the web interface
+skyink-gui
+
+# Open browser to http://localhost:5000
+# Preview on map, adjust parameters, generate .plan file
 ```
 
 ### Option 2: Command Line
 
 ```bash
-# 1. Create virtual environment
-python3 -m venv venv
-source venv/bin/activate  # Windows: venv\Scripts\activate
+# Generate a mission file
+skyink "HELLO" --lat 47.397 --lon 8.545 --alt 30
 
-# 2. Install dependencies
-pip install -r requirements.txt
+# Upload HELLO.plan to QGroundControl
+```
 
-# 3. Generate your first mission
-python text_to_drone_path.py "HELLO" --lat 47.397 --lon 8.545
+### Option 3: Development Mode (from source)
 
-# 4. Upload HELLO.plan to QGroundControl
+```bash
+# Clone and install in development mode
+git clone https://github.com/farhangnaderi/skyink.git
+cd skyink
+pip install -e .[gui]
+
+# Run GUI
+python -m skyink.gui_server
+
+# Or run CLI
+python -m skyink.text_to_drone_path "HELLO" --lat 47.397 --lon 8.545
 ```
 
 ⚠️ **Always test in PX4 SITL simulation before hardware flight**
+
+### Upgrading
+
+If you experience issues after upgrading, clear pip cache and force reinstall:
+
+```bash
+pip install --upgrade --force-reinstall --no-cache-dir skyink
+```
 
 ## Project Structure
 
