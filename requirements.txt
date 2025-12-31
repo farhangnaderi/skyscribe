@@ -1,0 +1,11 @@
+Hershey-Fonts>=0.2.0
+pymap3d>=3.0.0
+simplification>=0.7.0
+numpy>=1.24.0
+
+# GUI dependencies (optional)
+flask>=3.0.0
+folium>=0.15.0
+
+# Production server
+gunicorn>=21.2.0

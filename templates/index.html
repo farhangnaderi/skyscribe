@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text-to-Drone-Path GUI</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            height: 100vh;
+            display: flex;
+            background: #f5f5f5;
+        }
+
+        #sidebar {
+            width: 380px;
+            background: white;
+            padding: 20px;
+            overflow-y: auto;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+        }
+
+        #map {
+            flex: 1;
+            height: 100vh;
+        }
+
+        h1 {
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #555;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        input[type="checkbox"] {
+            margin-right: 5px;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 10px;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: #2196F3;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #1976D2;
+        }
+
+        .btn-success {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #45a049;
+        }
+
+        .btn-success:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        #stats {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+
+        #stats h3 {
+            font-size: 14px;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            color: #666;
+        }
+
+        .stat-value {
+            font-weight: 600;
+            color: #333;
+        }
+
+        #error {
+            color: #d32f2f;
+            padding: 10px;
+            margin-bottom: 10px;
+            background: #ffebee;
+            border-radius: 4px;
+            font-size: 13px;
+            display: none;
+        }
+
+        #success {
+            color: #388e3c;
+            padding: 10px;
+            margin-bottom: 10px;
+            background: #e8f5e9;
+            border-radius: 4px;
+            font-size: 13px;
+            display: none;
+        }
+
+        .warning-box {
+            background: #fff3cd;
+            border: 2px solid #ff9800;
+            border-radius: 4px;
+            padding: 12px;
+            margin-bottom: 20px;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        .warning-box strong {
+            color: #d84315;
+            display: block;
+            margin-bottom: 8px;
+            font-size: 13px;
+        }
+
+        .warning-box ul {
+            margin-left: 18px;
+            margin-top: 8px;
+        }
+
+        .warning-box li {
+            margin-bottom: 4px;
+        }
+
+        .section-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: #888;
+            text-transform: uppercase;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            letter-spacing: 0.5px;
+        }
+
+        .hint {
+            font-size: 11px;
+            color: #999;
+            margin-top: 3px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .checkbox-group label {
+            margin: 0;
+            margin-left: 5px;
+            font-weight: normal;
+        }
+    </style>
+</head>
+<body>
+    <div id="sidebar">
+        <h1>🚁 Text-to-Drone-Path</h1>
+
+        <div class="warning-box">
+            <strong>⚠️ SAFETY WARNING - NO LIABILITY</strong>
+            This tool generates autonomous flight paths. You are solely responsible for safe operation.
+            <ul>
+                <li>Test extensively in simulation (SITL/Gazebo) before real flights</li>
+                <li>Verify all waypoints and parameters carefully</li>
+                <li>Ensure flight area is clear of obstacles and complies with regulations</li>
+                <li>Use at your own risk - no warranties or guarantees provided</li>
+            </ul>
+        </div>
+
+        <div id="error"></div>
+        <div id="success"></div>
+
+        <div class="form-group">
+            <label for="text">Text to Write</label>
+            <input type="text" id="text" value="HELLO" placeholder="Enter text">
+        </div>
+
+        <div class="section-title">Home Position (GPS)</div>
+
+        <div class="form-group">
+            <label for="lat">Latitude</label>
+            <input type="number" id="lat" value="47.3977432" step="0.0000001">
+            <div class="hint">PX4 SITL default: 47.3977432</div>
+        </div>
+
+        <div class="form-group">
+            <label for="lon">Longitude</label>
+            <input type="number" id="lon" value="8.5455942" step="0.0000001">
+            <div class="hint">PX4 SITL default: 8.5455942</div>
+        </div>
+
+        <div class="form-group">
+            <label for="alt">Altitude MSL (meters)</label>
+            <input type="number" id="alt" value="488" step="1">
+        </div>
+
+        <div class="form-group">
+            <label for="map_type">Map Type</label>
+            <select id="map_type" onchange="switchMapType()">
+                <option value="street" selected>Street Map</option>
+                <option value="google_satellite">Google Satellite</option>
+                <option value="esri_satellite">Esri Satellite</option>
+            </select>
+        </div>
+
+        <div class="section-title">Text Rendering</div>
+
+        <div class="form-group">
+            <label for="font">Font</label>
+            <select id="font">
+                <option value="futural" selected>Futural (default)</option>
+                <option value="futuram">Futuram (bold)</option>
+                <option value="scriptc">Script (cursive)</option>
+                <option value="gothiceng">Gothic English</option>
+                <option value="timesib">Times Italic Bold</option>
+                <option value="timesr">Times Roman</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="letter_height">Letter Height (meters)</label>
+            <input type="number" id="letter_height" value="20" step="1" min="5" max="100">
+        </div>
+
+        <div class="form-group">
+            <label for="rotation">Rotation (degrees, 0=North)</label>
+            <input type="number" id="rotation" value="0" step="1" min="0" max="360">
+        </div>
+
+        <div class="section-title">Flight Parameters</div>
+
+        <div class="form-group">
+            <label for="flight_alt">Flight Altitude (meters above home)</label>
+            <input type="number" id="flight_alt" value="30" step="1" min="10" max="120">
+        </div>
+
+        <div class="section-title">Path Processing</div>
+
+        <div class="checkbox-group">
+            <input type="checkbox" id="simplify" checked>
+            <label for="simplify">Enable path simplification</label>
+        </div>
+
+        <div class="form-group">
+            <label for="epsilon">Epsilon (0 = auto)</label>
+            <input type="number" id="epsilon" value="0" step="0.1" min="0">
+            <div class="hint">Leave 0 for auto (2% of letter height)</div>
+        </div>
+
+        <div class="checkbox-group">
+            <input type="checkbox" id="optimize" checked>
+            <label for="optimize">Optimize stroke order</label>
+        </div>
+
+        <div class="form-group">
+            <label for="continuous_threshold">Continuous threshold (0 = auto)</label>
+            <input type="number" id="continuous_threshold" value="0" step="0.1" min="0">
+            <div class="hint">Leave 0 for auto (30% of letter height)</div>
+        </div>
+
+        <div class="section-title">Mission Settings</div>
+
+        <div class="form-group">
+            <label for="flight_speed">Flight speed (m/s)</label>
+            <input type="number" id="flight_speed" value="3.0" step="0.5" min="0.5" max="15">
+            <div class="hint">Cruise speed for the mission (2-5 m/s recommended)</div>
+        </div>
+
+        <div class="form-group">
+            <label for="acceptance_radius">Acceptance radius (m)</label>
+            <input type="number" id="acceptance_radius" value="1.5" step="0.1" min="0.5" max="5">
+            <div class="hint">How close drone must get to each waypoint (1.0-2.0m recommended)</div>
+        </div>
+
+        <div class="form-group">
+            <label for="transit_offset">Transit altitude offset (m)</label>
+            <input type="number" id="transit_offset" value="10" step="1" min="0" max="30">
+            <div class="hint">Extra altitude during transitions between letters (0 for direct)</div>
+        </div>
+
+        <div class="section-title">Export Format</div>
+
+        <div class="form-group">
+            <label for="export_format">File Format</label>
+            <select id="export_format">
+                <option value="plan" selected>QGC Plan (.plan) - PX4/MAVLink</option>
+                <option value="kml">KML (.kml) - Google Earth/DJI</option>
+                <option value="csv">CSV (.csv) - Spreadsheet</option>
+                <option value="waypoint">Waypoint (.waypoint) - MAVLink Legacy</option>
+                <option value="geojson">GeoJSON (.geojson) - GIS Tools</option>
+            </select>
+            <div class="hint">Choose output format for compatibility</div>
+        </div>
+
+        <button class="btn-primary" onclick="generatePreview()">
+            Preview on Map
+        </button>
+
+        <button class="btn-success" id="generateBtn" onclick="generatePlan()" disabled>
+            Generate Mission File
+        </button>
+
+        <div id="stats" style="display: none;">
+            <h3>Mission Statistics</h3>
+            <div class="stat-item">
+                <span>Text:</span>
+                <span class="stat-value" id="stat-text">-</span>
+            </div>
+            <div class="stat-item">
+                <span>Font:</span>
+                <span class="stat-value" id="stat-font">-</span>
+            </div>
+            <div class="stat-item">
+                <span>Strokes:</span>
+                <span class="stat-value" id="stat-strokes">-</span>
+            </div>
+            <div class="stat-item">
+                <span>Original points:</span>
+                <span class="stat-value" id="stat-original">-</span>
+            </div>
+            <div class="stat-item">
+                <span>Simplified points:</span>
+                <span class="stat-value" id="stat-simplified">-</span>
+            </div>
+            <div class="stat-item">
+                <span>Reduction:</span>
+                <span class="stat-value" id="stat-reduction">-</span>
+            </div>
+            <div class="stat-item">
+                <span>Total waypoints:</span>
+                <span class="stat-value" id="stat-total">-</span>
+            </div>
+            <div class="stat-item">
+                <span>Letter height:</span>
+                <span class="stat-value" id="stat-height">-</span>
+            </div>
+            <div class="stat-item">
+                <span>Flight altitude:</span>
+                <span class="stat-value" id="stat-alt">-</span>
+            </div>
+            <div class="stat-item">
+                <span>Estimated mission time:</span>
+                <span class="stat-value" id="stat-time">-</span>
+            </div>
+            <div class="stat-item">
+                <span>Total distance:</span>
+                <span class="stat-value" id="stat-distance">-</span>
+            </div>
+        </div>
+    </div>
+
+    <div id="map"></div>
+
+    <script>
+        // Initialize map
+        let map = L.map('map', {maxZoom: 22}).setView([47.3977432, 8.5455942], 15);
+
+        // Define base layers
+        const baseLayers = {
+            "Street": L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap',
+                maxZoom: 19
+            }),
+            "Google Satellite": L.tileLayer('https://mt{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
+                attribution: '© Google',
+                subdomains: ['0', '1', '2', '3'],
+                maxZoom: 22
+            }),
+            "Esri Satellite": L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+                attribution: '© Esri',
+                maxZoom: 19
+            })
+        };
+
+        // Add default layer
+        baseLayers["Street"].addTo(map);
+
+        // Add layer control
+        L.control.layers(baseLayers).addTo(map);
+
+        // Keep dropdown in sync with layer control
+        map.on('baselayerchange', function(e) {
+            const select = document.getElementById('map_type');
+            select.value = e.name.toLowerCase().replace(' ', '_');
+        });
+
+        // Function to switch map type from dropdown
+        function switchMapType() {
+            const mapType = document.getElementById('map_type').value;
+
+            // Remove all layers
+            Object.values(baseLayers).forEach(layer => {
+                if (map.hasLayer(layer)) {
+                    map.removeLayer(layer);
+                }
+            });
+
+            // Add selected layer
+            if (mapType === 'google_satellite') {
+                baseLayers["Google Satellite"].addTo(map);
+            } else if (mapType === 'esri_satellite') {
+                baseLayers["Esri Satellite"].addTo(map);
+            } else {
+                baseLayers["Street"].addTo(map);
+            }
+        }
+
+        let waypointMarkers = [];
+        let pathPolylines = [];
+        let homeMarker = null;
+
+        function clearMap() {
+            waypointMarkers.forEach(marker => map.removeLayer(marker));
+            pathPolylines.forEach(line => map.removeLayer(line));
+            waypointMarkers = [];
+            pathPolylines = [];
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('error');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+            setTimeout(() => {
+                errorDiv.style.display = 'none';
+            }, 5000);
+        }
+
+        function showSuccess(message) {
+            const successDiv = document.getElementById('success');
+            successDiv.textContent = message;
+            successDiv.style.display = 'block';
+            setTimeout(() => {
+                successDiv.style.display = 'none';
+            }, 5000);
+        }
+
+        async function generatePreview() {
+            clearMap();
+
+            const data = {
+                text: document.getElementById('text').value,
+                lat: parseFloat(document.getElementById('lat').value),
+                lon: parseFloat(document.getElementById('lon').value),
+                alt: parseFloat(document.getElementById('alt').value),
+                font: document.getElementById('font').value,
+                letter_height: parseFloat(document.getElementById('letter_height').value),
+                rotation: parseFloat(document.getElementById('rotation').value),
+                flight_alt: parseFloat(document.getElementById('flight_alt').value),
+                simplify: document.getElementById('simplify').checked,
+                epsilon: parseFloat(document.getElementById('epsilon').value) || null,
+                optimize: document.getElementById('optimize').checked,
+                continuous_threshold: parseFloat(document.getElementById('continuous_threshold').value) || null,
+                flight_speed: parseFloat(document.getElementById('flight_speed').value),
+                acceptance_radius: parseFloat(document.getElementById('acceptance_radius').value),
+                transit_offset: parseFloat(document.getElementById('transit_offset').value)
+            };
+
+            try {
+                const response = await fetch('/preview', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                if (!result.success) {
+                    showError(result.error);
+                    return;
+                }
+
+                // Update home marker
+                if (homeMarker) {
+                    map.removeLayer(homeMarker);
+                }
+                homeMarker = L.marker([result.home.lat, result.home.lon], {
+                    icon: L.icon({
+                        iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
+                        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
+                        iconSize: [25, 41],
+                        iconAnchor: [12, 41],
+                        popupAnchor: [1, -34],
+                        shadowSize: [41, 41]
+                    })
+                }).addTo(map);
+                homeMarker.bindPopup('<b>Home Position</b><br>Takeoff/Landing');
+
+                // Draw waypoints
+                const waypoints = result.waypoints;
+                const coords = waypoints.map(wp => [wp.lat, wp.lon]);
+
+                // Draw path
+                const writePath = [];
+                const transitPath = [];
+
+                for (let i = 0; i < waypoints.length; i++) {
+                    const wp = waypoints[i];
+                    const coord = [wp.lat, wp.lon];
+
+                    if (wp.is_transit) {
+                        transitPath.push(coord);
+                        if (writePath.length > 0) {
+                            const line = L.polyline(writePath, { color: 'blue', weight: 3 }).addTo(map);
+                            pathPolylines.push(line);
+                            writePath.length = 0;
+                        }
+                    } else {
+                        if (transitPath.length > 0) {
+                            const line = L.polyline(transitPath, { color: 'orange', weight: 2, dashArray: '5, 10' }).addTo(map);
+                            pathPolylines.push(line);
+                            transitPath.length = 0;
+                        }
+                        writePath.push(coord);
+                    }
+
+                    // Add small circle for each waypoint
+                    const circle = L.circleMarker(coord, {
+                        radius: wp.is_transit ? 2 : 3,
+                        fillColor: wp.is_transit ? 'orange' : 'blue',
+                        color: 'white',
+                        weight: 1,
+                        opacity: 1,
+                        fillOpacity: 0.8
+                    }).addTo(map);
+
+                    circle.bindPopup(`
+                        <b>Waypoint ${i + 1}</b><br>
+                        Lat: ${wp.lat.toFixed(7)}<br>
+                        Lon: ${wp.lon.toFixed(7)}<br>
+                        Alt: ${wp.alt.toFixed(1)}m<br>
+                        Type: ${wp.is_transit ? 'Transit' : 'Write'}
+                    `);
+
+                    waypointMarkers.push(circle);
+                }
+
+                // Draw remaining paths
+                if (writePath.length > 0) {
+                    const line = L.polyline(writePath, { color: 'blue', weight: 3 }).addTo(map);
+                    pathPolylines.push(line);
+                }
+                if (transitPath.length > 0) {
+                    const line = L.polyline(transitPath, { color: 'orange', weight: 2, dashArray: '5, 10' }).addTo(map);
+                    pathPolylines.push(line);
+                }
+
+                // Fit map to bounds
+                if (coords.length > 0) {
+                    map.fitBounds(coords);
+                }
+
+                // Update statistics
+                const stats = result.stats;
+                document.getElementById('stat-text').textContent = stats.text;
+                document.getElementById('stat-font').textContent = stats.font;
+                document.getElementById('stat-strokes').textContent = stats.num_strokes;
+                document.getElementById('stat-original').textContent = stats.original_points;
+                document.getElementById('stat-simplified').textContent = stats.simplified_points;
+                document.getElementById('stat-reduction').textContent = stats.reduction_percent + '%';
+                document.getElementById('stat-total').textContent = stats.total_waypoints;
+                document.getElementById('stat-height').textContent = stats.letter_height + 'm';
+                document.getElementById('stat-alt').textContent = stats.flight_alt + 'm';
+                document.getElementById('stat-time').textContent = stats.mission_time || '-';
+                document.getElementById('stat-distance').textContent = stats.total_distance ? stats.total_distance + 'm' : '-';
+                document.getElementById('stats').style.display = 'block';
+
+                // Enable generate button
+                document.getElementById('generateBtn').disabled = false;
+
+                showSuccess(`Preview generated: ${stats.total_waypoints} waypoints`);
+
+            } catch (error) {
+                showError('Failed to generate preview: ' + error.message);
+            }
+        }
+
+        async function generatePlan() {
+            try {
+                const format = document.getElementById('export_format').value;
+
+                const response = await fetch('/generate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ format: format })
+                });
+
+                const result = await response.json();
+
+                if (!result.success) {
+                    showError(result.error);
+                    return;
+                }
+
+                const formatName = format.toUpperCase();
+                showSuccess(`Generated ${result.filename} (${formatName} format) with ${result.waypoint_count} waypoints`);
+
+                // Trigger download
+                window.location.href = `/download/${result.filename}`;
+
+            } catch (error) {
+                showError('Failed to generate plan: ' + error.message);
+            }
+        }
+
+        // Update home marker when coordinates change
+        ['lat', 'lon'].forEach(id => {
+            document.getElementById(id).addEventListener('change', function() {
+                const lat = parseFloat(document.getElementById('lat').value);
+                const lon = parseFloat(document.getElementById('lon').value);
+
+                if (homeMarker) {
+                    map.removeLayer(homeMarker);
+                }
+
+                homeMarker = L.marker([lat, lon], {
+                    icon: L.icon({
+                        iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
+                        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
+                        iconSize: [25, 41],
+                        iconAnchor: [12, 41],
+                        popupAnchor: [1, -34],
+                        shadowSize: [41, 41]
+                    })
+                }).addTo(map);
+                homeMarker.bindPopup('<b>Home Position</b><br>Takeoff/Landing');
+
+                map.setView([lat, lon], 15);
+            });
+        });
+    </script>
+</body>
+</html>

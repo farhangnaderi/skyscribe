@@ -1,0 +1,71 @@
+[build-system]
+requires = ["setuptools>=45", "wheel", "setuptools_scm[toml]>=6.2"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "skyscribe"
+version = "1.0.0"
+description = "Convert text to PX4 drone flight paths using Hershey stroke fonts"
+readme = "README.md"
+requires-python = ">=3.8"
+license = {text = "MIT"}
+authors = [
+    {name = "skyscribe contributors"}
+]
+keywords = ["drone", "px4", "mavlink", "qgroundcontrol", "mission-planning", "path-planning", "fonts", "trajectory"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "Hershey-Fonts>=0.2.0",
+    "pymap3d>=3.0.0",
+    "simplification>=0.7.0",
+    "numpy>=1.24.0",
+]
+
+[project.optional-dependencies]
+gui = [
+    "flask>=3.0.0",
+    "folium>=0.15.0",
+]
+server = [
+    "flask>=3.0.0",
+    "folium>=0.15.0",
+    "gunicorn>=21.2.0",
+]
+dev = [
+    "pytest>=7.0.0",
+    "black>=23.0.0",
+    "flake8>=6.0.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/farhangnaderi/skyscribe"
+Documentation = "https://github.com/farhangnaderi/skyscribe#readme"
+Repository = "https://github.com/farhangnaderi/skyscribe"
+"Bug Tracker" = "https://github.com/farhangnaderi/skyscribe/issues"
+
+[project.scripts]
+skyscribe = "text_to_drone_path:main"
+skyscribe-gui = "gui_server:main"
+
+[tool.setuptools]
+packages = [
+    "skyscribe",
+]
+include-package-data = true
+
+[tool.setuptools.package-data]
+"*" = ["templates/*.html", "static/*"]
