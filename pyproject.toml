@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "skyink"
-version = "1.0.3"
+version = "1.0.4"
 description = "Convert text to PX4 drone flight paths using Hershey stroke fonts"
 readme = "README.md"
 requires-python = ">=3.8"
@@ -33,6 +33,8 @@ dependencies = [
     "pymap3d>=3.0.0",
     "simplification>=0.7.0",
     "numpy>=1.24.0",
+    "flask>=3.0.0",
+    "folium>=0.15.0",
 ]
 
 [project.optional-dependencies]

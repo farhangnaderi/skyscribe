@@ -14,11 +14,11 @@ Usage:
 
 import argparse
 import sys
-from font_extractor import FontExtractor
-from path_simplifier import PathSimplifier
-from coord_transformer import CoordinateTransformer
-from path_transitions import PathTransitionHandler
-from mission_generator import MissionGenerator
+from skyink.font_extractor import FontExtractor
+from skyink.path_simplifier import PathSimplifier
+from skyink.coord_transformer import CoordinateTransformer
+from skyink.path_transitions import PathTransitionHandler
+from skyink.mission_generator import MissionGenerator
 
 
 def main():

@@ -5,8 +5,8 @@ Shows the 2D layout of text paths before GPS conversion.
 """
 
 import sys
-from font_extractor import FontExtractor
-from path_simplifier import PathSimplifier
+from skyink.font_extractor import FontExtractor
+from skyink.path_simplifier import PathSimplifier
 
 
 def visualize_paths_ascii(paths, width=80, height=24):
