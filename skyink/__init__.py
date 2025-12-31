@@ -1,3 +1,3 @@
 """SkyInk - Convert text to autonomous drone flight missions."""
 
-__version__ = "1.0.1"
+__version__ = "1.0.2"

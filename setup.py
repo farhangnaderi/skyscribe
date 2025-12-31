@@ -10,7 +10,7 @@ long_description = (this_directory / "README.md").read_text()
 
 setup(
     name="skyink",
-    version="1.0.1",
+    version="1.0.2",
     author="skyink contributors",
     author_email="info@farhangnaderi.com",
     description="Convert text to PX4 drone flight paths using Hershey stroke fonts",

@@ -18,13 +18,15 @@ import os
 from datetime import datetime
 
 # Import our existing modules
-from font_extractor import FontExtractor
-from path_simplifier import PathSimplifier
-from coord_transformer import CoordinateTransformer
-from path_transitions import PathTransitionHandler
-from mission_generator import MissionGenerator
+from skyink.font_extractor import FontExtractor
+from skyink.path_simplifier import PathSimplifier
+from skyink.coord_transformer import CoordinateTransformer
+from skyink.path_transitions import PathTransitionHandler
+from skyink.mission_generator import MissionGenerator
 
-app = Flask(__name__)
+# Get the directory where this file is located
+_template_dir = os.path.join(os.path.dirname(__file__), 'templates')
+app = Flask(__name__, template_folder=_template_dir)
 
 # Store the latest mission data
 latest_mission = {
@@ -250,7 +252,7 @@ def generate_plan():
             filename = os.path.basename(filepath)
         else:
             # Use format exporters
-            from format_exporters import export_mission
+            from skyink.format_exporters import export_mission
             acceptance_radius = params.get('acceptance_radius', 1.5)
             filepath = export_mission(
                 waypoints_list,
