@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: skyscribe
+    name: skyink
     env: python
     buildCommand: "pip install -r requirements.txt"
     startCommand: "gunicorn gui_server:app"

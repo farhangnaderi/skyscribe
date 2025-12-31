@@ -3,14 +3,14 @@ requires = ["setuptools>=45", "wheel", "setuptools_scm[toml]>=6.2"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "skyscribe"
+name = "skyink"
 version = "1.0.0"
 description = "Convert text to PX4 drone flight paths using Hershey stroke fonts"
 readme = "README.md"
 requires-python = ">=3.8"
 license = {text = "MIT"}
 authors = [
-    {name = "skyscribe contributors"}
+    {name = "skyink contributors"}
 ]
 keywords = ["drone", "px4", "mavlink", "qgroundcontrol", "mission-planning", "path-planning", "fonts", "trajectory"]
 classifiers = [
@@ -52,18 +52,26 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/farhangnaderi/skyscribe"
-Documentation = "https://github.com/farhangnaderi/skyscribe#readme"
-Repository = "https://github.com/farhangnaderi/skyscribe"
-"Bug Tracker" = "https://github.com/farhangnaderi/skyscribe/issues"
+Homepage = "https://github.com/farhangnaderi/skyink"
+Documentation = "https://github.com/farhangnaderi/skyink#readme"
+Repository = "https://github.com/farhangnaderi/skyink"
+"Bug Tracker" = "https://github.com/farhangnaderi/skyink/issues"
 
 [project.scripts]
-skyscribe = "text_to_drone_path:main"
-skyscribe-gui = "gui_server:main"
+skyink = "text_to_drone_path:main"
+skyink-gui = "gui_server:main"
 
 [tool.setuptools]
-packages = [
-    "skyscribe",
+py-modules = [
+    "text_to_drone_path",
+    "gui_server",
+    "font_extractor",
+    "path_simplifier",
+    "coord_transformer",
+    "path_transitions",
+    "mission_generator",
+    "format_exporters",
+    "visualize_path"
 ]
 include-package-data = true
 

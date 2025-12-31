@@ -1,4 +1,4 @@
-# SkyScribe - Aerial Skywriting with Drones
+# SkyInk - Aerial Skywriting with Drones
 
 Convert text to autonomous flight missions for PX4, ArduPilot, and other MAVLink-compatible autopilots. Uses Hershey stroke fonts, Douglas-Peucker path simplification, and GPS coordinate transformation.
 
@@ -50,7 +50,7 @@ python text_to_drone_path.py "HELLO" --lat 47.397 --lon 8.545
 ## Project Structure
 
 ```
-skyscribe/
+skyink/
 ├── gui_server.py             # 🌐 Web GUI server (Flask)
 ├── templates/
 │   └── index.html            # GUI frontend (HTML/JS/CSS)

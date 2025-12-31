@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Setup configuration for skyscribe package."""
+"""Setup configuration for skyink package."""
 
-from setuptools import setup, find_packages
+from setuptools import setup
 from pathlib import Path
 
 # Read README for long description
@@ -9,19 +9,29 @@ this_directory = Path(__file__).parent
 long_description = (this_directory / "README.md").read_text()
 
 setup(
-    name="skyscribe",
+    name="skyink",
     version="1.0.0",
-    author="skyscribe contributors",
+    author="skyink contributors",
     author_email="info@farhangnaderi.com",
     description="Convert text to PX4 drone flight paths using Hershey stroke fonts",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/farhangnaderi/skyscribe",
+    url="https://github.com/farhangnaderi/skyink",
     project_urls={
-        "Bug Reports": "https://github.com/farhangnaderi/skyscribe/issues",
-        "Source": "https://github.com/farhangnaderi/skyscribe",
+        "Bug Reports": "https://github.com/farhangnaderi/skyink/issues",
+        "Source": "https://github.com/farhangnaderi/skyink",
     },
-    packages=find_packages(exclude=["venv", "venv.*", "*.egg-info"]),
+    py_modules=[
+        "text_to_drone_path",
+        "gui_server",
+        "font_extractor",
+        "path_simplifier",
+        "coord_transformer",
+        "path_transitions",
+        "mission_generator",
+        "format_exporters",
+        "visualize_path"
+    ],
     include_package_data=True,
     package_data={
         "": ["templates/*.html", "static/*"],
@@ -66,8 +76,8 @@ setup(
     },
     entry_points={
         "console_scripts": [
-            "skyscribe=text_to_drone_path:main",
-            "skyscribe-gui=gui_server:main",
+            "skyink=text_to_drone_path:main",
+            "skyink-gui=gui_server:main",
         ],
     },
     keywords="drone px4 mavlink qgroundcontrol mission-planning path-planning fonts trajectory",
