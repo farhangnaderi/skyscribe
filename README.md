@@ -1,6 +1,6 @@
-# SkyScribe - Aerial Skywriting for PX4 Drones
+# SkyScribe - Aerial Skywriting with Drones
 
-Convert text strings into PX4-compatible drone flight paths using Hershey stroke fonts, Douglas-Peucker path simplification, and GPS coordinate transformation.
+Convert text to autonomous flight missions for PX4, ArduPilot, and other MAVLink-compatible autopilots. Uses Hershey stroke fonts, Douglas-Peucker path simplification, and GPS coordinate transformation.
 
 ## Features
 
@@ -512,7 +512,9 @@ python text_to_drone_path.py "HAPPY NEW YEAR" \
 
 ## License
 
-This project is provided as-is for educational and research purposes. Test extensively in simulation before hardware deployment. The authors assume no liability for flight operations.
+MIT License - see [LICENSE](LICENSE) file for details.
+
+**Safety Disclaimer:** This software generates autonomous drone flight paths. Users are solely responsible for safe operation, testing in simulation, compliance with regulations, and all risks associated with drone operations. No warranties or guarantees are provided.
 
 ## Contributing
 
