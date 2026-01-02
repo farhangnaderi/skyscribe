@@ -10,12 +10,15 @@ Usage:
     Then open http://localhost:5000 in your browser
 """
 
+import argparse
+import json
+import os
+import traceback
+from datetime import datetime
+
 from flask import Flask, render_template, request, jsonify, send_file
 import folium
 from folium import plugins
-import json
-import os
-from datetime import datetime
 
 # Import our existing modules
 from skyink.font_extractor import FontExtractor
@@ -23,6 +26,7 @@ from skyink.path_simplifier import PathSimplifier
 from skyink.coord_transformer import CoordinateTransformer
 from skyink.path_transitions import PathTransitionHandler
 from skyink.mission_generator import MissionGenerator
+from skyink.format_exporters import export_mission
 
 # Get the directory where this file is located
 _template_dir = os.path.join(os.path.dirname(__file__), 'templates')
@@ -191,7 +195,6 @@ def preview():
         })
 
     except Exception as e:
-        import traceback
         error_details = traceback.format_exc()
         print("ERROR in /preview:")
         print(error_details)
@@ -252,7 +255,6 @@ def generate_plan():
             filename = os.path.basename(filepath)
         else:
             # Use format exporters
-            from skyink.format_exporters import export_mission
             acceptance_radius = params.get('acceptance_radius', 1.5)
             filepath = export_mission(
                 waypoints_list,
@@ -293,9 +295,6 @@ def download(filename):
 
 def main():
     """Main entry point for GUI server."""
-    import argparse
-    import os
-
     parser = argparse.ArgumentParser(description='SkyInk Web GUI Server')
     parser.add_argument('-p', '--port', type=int, default=int(os.environ.get('PORT', 5000)),
                         help='Port to run the server on (default: 5000)')

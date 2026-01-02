@@ -3,6 +3,7 @@ Coordinate transformation from local ENU (East-North-Up) to GPS (WGS84).
 Handles rotation and geodetic conversion using pymap3d.
 """
 
+import sys
 import pymap3d as pm
 import numpy as np
 
@@ -109,8 +110,6 @@ class CoordinateTransformer:
 
 
 if __name__ == '__main__':
-    import sys
-
     # Simple command-line test tool
     if len(sys.argv) < 3:
         print("Usage: python coord_transformer.py <lat> <lon> [alt] [rotation]")

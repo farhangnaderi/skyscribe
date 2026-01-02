@@ -9,11 +9,13 @@ Supports exporting waypoints to various formats:
 - GeoJSON: GIS integration
 """
 
+import os
 import csv
 import json
 from datetime import datetime
 from xml.etree import ElementTree as ET
 from xml.dom import minidom
+from skyink.mission_generator import MissionGenerator
 
 
 class FormatExporter:
@@ -316,7 +318,6 @@ def export_mission(waypoints, home_position, output_file, format='plan', metadat
         Path to created file
     """
     # Remove extension from output_file if present
-    import os
     base_name = os.path.splitext(output_file)[0]
 
     if format == 'kml':
@@ -337,7 +338,6 @@ def export_mission(waypoints, home_position, output_file, format='plan', metadat
 
     elif format == 'plan':
         # Use existing mission_generator
-        from mission_generator import MissionGenerator
         generator = MissionGenerator()
         return generator.generate_plan(
             waypoints,

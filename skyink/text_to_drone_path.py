@@ -19,6 +19,7 @@ from skyink.path_simplifier import PathSimplifier
 from skyink.coord_transformer import CoordinateTransformer
 from skyink.path_transitions import PathTransitionHandler
 from skyink.mission_generator import MissionGenerator
+from skyink.format_exporters import export_mission
 
 
 def main():
@@ -285,7 +286,6 @@ Examples:
         )
     else:
         # Use format exporters
-        from format_exporters import export_mission
         output_path = export_mission(
             gps_waypoints,
             home_position,
