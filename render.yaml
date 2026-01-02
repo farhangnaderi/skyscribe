@@ -2,7 +2,7 @@ services:
   - type: web
     name: skyink
     env: python
-    buildCommand: "pip install .[server]"
+    buildCommand: "pip install . && pip install gunicorn"
     startCommand: "gunicorn 'skyink.gui_server:app' --bind 0.0.0.0:$PORT"
     envVars:
       - key: PYTHON_VERSION
